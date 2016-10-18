@@ -16,6 +16,15 @@ export function getTasks() {
   return Promise.resolve(tasks)
 }
 
+export function getTask(task_id) {
+  const result = tasks.filter(task => task.task_id == task_id)
+  if (result.length == 1) {
+    return Promise.resolve(result[0])
+  } else {
+    return Promise.reject(new Error('no such task'))
+  }
+}
+
 const tasks = [{
   task_id: '1',
   ne_id: '1',
