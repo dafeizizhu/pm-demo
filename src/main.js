@@ -6,6 +6,9 @@ import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
+import Highcharts from 'highcharts'
+require('highcharts/modules/exporting')(Highcharts)
+
 import router from './router'
 
 const app = new Vue({
