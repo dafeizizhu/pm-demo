@@ -19,12 +19,35 @@
         <h4>平均磁盘占用率</h4>
       </div>
     </div>
+    <h2 class="sub-header">性能任务</h2>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>网元</th>
+            <th>指标</th>
+            <th>值</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for='task in tasks'>
+            <td>{{ task.ne.name }}</td>
+            <td>{{ task.index.name }}</td>
+            <td>{{ task.value }}</td>
+          </tr>
+          <tr v-if='tasks.length == 0'>
+            <td colspan='3'>没有性能任务，单击<router-link to='/tasks/new'>这里</router-link>创建一个？</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
 <script>
 import { getTasks, getPerformanceData } from '../collector'
 import { getNe } from '../nes'
+import { getIndex } from '../indexes'
 
 function getNes(tasks) {
   var map = {}
@@ -44,12 +67,16 @@ export default {
       ne_length: '...',
       avg_cpu: '...',
       avg_mem: '...',
-      avg_disk: '...'
+      avg_disk: '...',
+      tasks: []
     }
   },
   created: function () {
-    setInterval(this.updateData, 5000)
+    this.updateDataTId = setInterval(this.updateData, 5000)
     this.updateData()
+  },
+  destroyed: function () {
+    clearInterval(this.updateDataTId)
   },
   methods: {
     updateData: function () {
@@ -57,13 +84,32 @@ export default {
         this.ne_length = nes.length
         return Promise.resolve(tasks)
       }).then(tasks => {
-        getData(tasks).then(data => {
+        return getData(tasks).then(data => {
           const cpuData = data.filter(d => d.index_id == '1')
           this.avg_cpu = Math.floor(cpuData.reduce((prev, cur) => prev + cur.value, 0) / cpuData.length)
           const memData = data.filter(d => d.index_id == '2')
           this.avg_mem = Math.floor(memData.reduce((prev, cur) => prev + cur.value, 0) / memData.length)
           const diskData = data.filter(d => d.index_id == '3')
           this.avg_disk = Math.floor(diskData.reduce((prev, cur) => prev + cur.value, 0) / diskData.length)
+
+          return Promise.all(tasks.map(task => {
+            return Promise.all([getNe(task.ne_id), getIndex(task.index_id)])
+          })).then(values => {
+            return Promise.resolve(tasks.map((task, i) => {
+              return {
+                ne: values[i][0],
+                index: values[i][1]
+              }
+            }))
+          }).then(tasks => {
+            this.tasks = tasks.map((task, i) => {
+              return {
+                ne: task.ne,
+                index: task.index,
+                value: data[i].value
+              }
+            })
+          })
         })
       })
     }
@@ -73,22 +119,18 @@ export default {
 
 <style>
 .indicator {
-  max-width: 100%;
-  background: #ccc;
-  border-radius: 50%;
-  padding-top: 100%;
   position: relative;
+  background-image: url('../../static/images/dot.png');
+  background-size: contain;
+  background-position: 50%;
+  background-repeat: no-repeat;
 }
 
 .indicator span {
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  position: absolute;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 100px;
+  font-size: 80px;
+  line-height: 200px;
 }
 </style>
