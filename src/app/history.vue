@@ -3,7 +3,7 @@
     <h1 class='page-header'>历史性能</h1>
     <form class='form-horizontal' v-on:submit.prevent='submit'>
       <div class='form-group'>
-        <label class='col-sm-2 control-label'>选择网元</label>
+        <label class='col-sm-2 control-label'>选择任务</label>
         <div class='col-sm-10'>
           <input class='form-control' type='text' readonly='readonly' v-model='tasks_name' />
           <button class='btn btn-default btn-inline' v-on:click.prevent='pickTask'>选择</button>
@@ -54,7 +54,7 @@ import { getIndex } from '../indexes'
 import { getTask } from '../collector'
 import { getData } from '../history'
 
-import { history } from '../charts'
+import charts from '../charts'
 
 export default {
   data: function () {
@@ -81,7 +81,7 @@ export default {
         values.forEach(value => {
           const container = document.createElement('div')
           document.getElementById('container').appendChild(container)
-          this.charts.push(history(container, value.title, [{ name: value.title, data: value.data }]))
+          this.charts.push(charts(container, value.title, [{ name: value.title, data: value.data }]))
         })
       })
     },

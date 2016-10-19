@@ -1,6 +1,6 @@
 import Highcharts from 'highcharts'
 
-export function history(container, title, series) {
+export default function (container, title, series) {
   return Highcharts.chart(container, {
     title: {
       text: title,
@@ -19,12 +19,7 @@ export function history(container, title, series) {
         color: '#808080'
       }]
     },
-    legend: {
-      layout: 'vertical',
-      align: 'right',
-      verticalAlign: 'middle',
-      borderWidth: 0
-    },
+    legend: false,
     series
   })
 }
