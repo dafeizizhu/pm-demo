@@ -3,14 +3,14 @@
     <h1 class='page-header'>性能任务</h1>
     <div class='btn-toolbar'>
       <button class='btn btn-default' v-on:click='clickNew'>新建</button>
-      <button :disabled='tasks.filter(task => task.selected).length != 1' class='btn btn-default' v-on:click='clickEdit'>修改</button>
-      <button :disabled='tasks.filter(task => task.selected).length == 0' class='btn btn-danger'>删除</button>
+      <button v-bind:disabled='editDisabled' class='btn btn-default' v-on:click='clickEdit'>修改</button>
+      <button v-bind:disabled='removeDisabled' class='btn btn-danger'>删除</button>
     </div>
     <div class='table-responsive'>
       <table class='table table-striped'>
         <thead>
           <tr>
-            <th></th>
+            <th>选择</th>
             <th>网元</th>
             <th>指标</th>
           </tr>
@@ -41,6 +41,14 @@ export default {
       tasks: []
     }
   },
+  computed: {
+    editDisabled: function () {
+      return this.tasks.filter(task => task.selected).length != 1
+    },
+    removeDisabled: function () {
+      return this.tasks.filter(task => task.selected).length == 0
+    }
+  },  
   created: function () {
     getTasks().then(tasks => {
       return Promise.all(tasks.map(task => {
