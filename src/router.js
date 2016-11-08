@@ -1,11 +1,36 @@
 import VueRouter from 'vue-router'
 
 import App from './app'
-import Dashboard from './app/dashboard'
-import Tasks from './app/tasks'
-import Task from './app/task'
-import History from './app/history'
-import Realtime from './app/realtime'
+
+const Dashboard = resolve => {
+  require.ensure(['./app/dashboard'], () => {
+    resolve(require('./app/dashboard'))
+  })
+}
+
+const Tasks = resolve => {
+  require.ensure(['./app/tasks'], () => {
+    resolve(require('./app/tasks'))
+  })
+}
+
+const Task = resolve => {
+  require.ensure(['./app/task'], () => {
+    resolve(require('./app/task'))
+  })
+}
+
+const History = resolve => {
+  require.ensure(['./app/history'], () => {
+    resolve(require('./app/history'))
+  })
+}
+
+const Realtime = resolve => {
+  require.ensure(['./app/realtime'], () => {
+    resolve(require('./app/realtime'))
+  })
+}
 
 const routes = [
   { 
